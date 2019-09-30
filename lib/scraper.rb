@@ -8,20 +8,31 @@ class Scraper
     students = []
     page.css("div.student-card").each do |student|
       name = student.css(".student-name").text
-      location = student.css("student-loaction").text
-      profile.url = student.css("a").attribute("href").value
-      student.info = {:name => name,
-        :location => location,
-        :profile_url => profile_url}
-        students << student_info
+      location = student.css(".student-location").text
+      profile_url = student.css("a").attribute("href").value
+      student_info = {:name => name,
+                :location => location,
+                :profile_url => profile_url}
+      students << student_info
       end
-      students
+    students
+   end
+
+  def self.scrape_profile_page(profile_url)
+    page = Nokogiri::HTML(open(profile_url))
+    student = {}
+    container = page.css(".social-icon-container a").collect{|icon| icon.attribute("href").value}
+    container.each do |link|
+      if link.include?("twitter")
+        student[:twitter] = link
+      elsif link.include?("linkedin")
+        student[:linkedin] = link
+      elsif link.include?("github")
+        student[:github] = link
+      elsif link.include?(".com")
+        student[:blog] = link
+      end
     end
   end
 
-  def self.scrape_profile_page(profile_url)
-    
-  end
-
 end
-
